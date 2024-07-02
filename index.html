@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Google Maps</title>
+    <title>Google Earth Engine Map</title>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://code.earthengine.google.com/ee-api.js"></script>
     <style>
         #map {
-            height: 100%;
+            height: 100vh;
             width: 100%;
         }
     </style>
@@ -12,14 +14,27 @@
 <body>
     <div id="map"></div>
     <script>
-        function initMap() {
-            var map = new google.maps.Map(document.getElementById('map'), {
-                center: {lat: -34.397, lng: 150.644},
-                zoom: 8
-            });
-        }
+        // Initialize the Earth Engine API.
+        ee.initialize();
+
+        // Create the map.
+        var map = new ee.Map({
+            target: 'map'
+        });
+
+        // Add a Google Earth Engine layer.
+        var dataset = ee.ImageCollection('MODIS/006/MCD12Q1').filter(ee.Filter.date('2020-01-01', '2020-12-31')).first();
+        var visualization = {
+            bands: ['LC_Type1'],
+            min: 1.0,
+            max: 17.0,
+            palette: [
+                '05450a', '086a10', '54a708', '78d203', '009900', 'c6b044', 'dcd159',
+                'dade48', 'fbff13', 'b6ff05', '27ff87', 'c24f44', 'a5a5a5', 'ff6d4c',
+                '69fff8', 'f9ffa4', '1c0dff'
+            ]
+        };
+        map.addLayer(dataset, visualization, 'Land Cover');
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBd5SnZNYSJMMezUw3BxE8xavwuiVpaM3w&callback=initMap"
-    async defer></script>
 </body>
 </html>
